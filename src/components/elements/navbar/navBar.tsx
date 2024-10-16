@@ -1,5 +1,6 @@
-
-import { useState } from 'react';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 const Navbar = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -14,12 +15,14 @@ const Navbar = () => {
       text: "Organization",
       defaultImg: "/assets/navbar/organization_grey.png",
       activeImg: "/assets/navbar/organization.png",
+      link: "/organizations",
     },
     {
       id: 1,
       text: "Dashboard",
       defaultImg: "/assets/navbar/dashboard_grey.png",
       activeImg: "/assets/navbar/dashboard.png",
+      link: "/dashboard",
     },
     {
       id: 2,
@@ -28,28 +31,39 @@ const Navbar = () => {
       activeImg: "/assets/navbar/developer.png",
     },
   ];
+
   return (
-    <div className="flex flex-col w-[220px] h-screen bg-white shadow-lg">
-      <nav className="flex flex-col items-center justify-center h-[100px]">
-        {navOptions.map((option, index) => (
-        <button
-          key={option.id}
-          className={`flex flex-col items-center focus:outline-none ${
-            activeIndex === index ? 'text-green-500' : 'text-gray-500'
-          }`}
-          onClick={() => handleClick(index)}
-        >
-          <img
-            src={activeIndex === index ? option.activeImg : option.defaultImg}
-            alt={option.text}
-            className="h-8 w-8 mb-2"
-          />
-          <span>{option.text}</span>
-        </button>
+    <nav className="flex flex-col bg-white w-[220px] h-screen pt-3">
+      <Image
+        src="/assets/devrum.png"
+        alt="Devrum Logo"
+        width={130}
+        height={31}
+        className="pl-2 mb-[40px]"
+      />
+      {navOptions.map((option, index) => (
+        <Link href={option.link ?? "/"} key={option.id} passHref>
+          <button
+            className={`flex ${
+              activeIndex === index ? "text-purple_s" : "text-grey_t"
+            }`}
+            onClick={() => handleClick(index)}
+          >
+            <Image
+              width={25}
+              height={25}
+              src={activeIndex === index ? option.activeImg : option.defaultImg}
+              alt={option.text}
+              className="my-4 ml-4"
+            />
+            <span className="text-[20px] font-medium ml-2 my-4">
+              {option.text}
+            </span>
+          </button>
+        </Link>
       ))}
     </nav>
-    </div>
   );
-}
+};
 
 export default Navbar;

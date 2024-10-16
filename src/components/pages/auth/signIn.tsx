@@ -6,7 +6,7 @@ export function SignIn() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push("/dashboard");
+    router.push("/organizations");
   };
 
   return (
