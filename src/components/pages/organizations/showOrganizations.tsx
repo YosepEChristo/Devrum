@@ -1,9 +1,66 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import NavBar from "@/components/elements/navbar/navBar";
+import {
+  getOrganizations,
+  getProjectsByOrganizationId,
+} from "@/lib/organizationDB";
+
+interface Organization {
+  id: string;
+  name: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+}
 
 export function ShowOrganizations() {
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState<boolean>(false);
+  const router = useRouter();
+
+  // Fetch organizations when component mounts
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const orgs = await getOrganizations();
+        setOrganizations(orgs);
+      } catch (err) {
+        console.error("Failed to fetch organizations:", err);
+      }
+    };
+    fetchOrganizations();
+  }, []);
+
+  // Fetch projects when an organization is selected
+  const handleSelectOrganization = async (orgId: string) => {
+    setSelectedOrgId(orgId);
+    setLoadingProjects(true);
+    try {
+      const orgProjects = await getProjectsByOrganizationId(orgId);
+      setProjects(orgProjects);
+    } catch (err) {
+      console.error("Failed to fetch projects:", err);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  // Navigate to project page
+  const handleProjectClick = (projectId: string) => {
+    try {
+      router.push(`/projects/${projectId}`);
+    } catch (error) {
+      console.error("navigation failed:", error);
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <NavBar />
@@ -18,24 +75,23 @@ export function ShowOrganizations() {
                 Select your Organization:
               </p>
             </div>
-            <button className="bg-purple_s text-white font-semibold pl-4 py-2 pr-6 rounded flex items-center h-[50px]">
-              <Image
-                src="/assets/pages/organizations/azuredevops.png"
-                alt="Devrum Logo"
-                width={30}
-                height={30}
-                className="pl-2 mr-2"
-              />
-              Azure DevOps Board
-            </button>
           </div>
+
+          {/* Display organizations */}
           <div className="mt-4 flex space-x-4">
-            <button className="bg-purple_s text-white font-semibold px-5 py-2 rounded-lg w-[170px] h-[50px]">
-              yosepgg
-            </button>
-            <button className="bg-white text-purple_s font-semibold border border-purple_s px-6 py-3 rounded-lg w-[170px] h-[50px]">
-              yosepgg0248
-            </button>
+            {organizations.map((org) => (
+              <button
+                key={org.id}
+                className={`${
+                  selectedOrgId === org.id
+                    ? "bg-purple_s text-white"
+                    : "bg-white text-purple_s border border-purple_s"
+                } font-semibold px-5 py-2 rounded-lg w-[170px] h-[50px]`}
+                onClick={() => handleSelectOrganization(org.id)}
+              >
+                {org.name}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -45,14 +101,26 @@ export function ShowOrganizations() {
             Your Project
           </h2>
           <p className="text-[25px] text-grey_s">Select your Project:</p>
-          <div className="mt-4 flex space-x-4">
-            <button className="bg-white font-semibold text-grey_s px-6 py-3 rounded-lg shadow-lg">
-              Skripsi
-            </button>
-            <button className="bg-white font-semibold text-grey_s px-6 py-3 rounded-lg shadow-lg">
-              SiMantan
-            </button>
-          </div>
+
+          {loadingProjects ? (
+            <p>Loading projects...</p>
+          ) : (
+            <div className="mt-4 flex space-x-4">
+              {projects.length > 0 ? (
+                projects.map((project) => (
+                  <button
+                    key={project.id}
+                    className="bg-white font-semibold text-grey_s px-6 py-3 rounded-lg shadow-lg"
+                    onClick={() => handleProjectClick(project.id)}
+                  >
+                    {project.name}
+                  </button>
+                ))
+              ) : (
+                <p>No projects available for this organization.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

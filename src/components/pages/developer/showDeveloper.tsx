@@ -2,8 +2,8 @@
 
 import NavBar from "@/components/elements/navbar/navBar";
 
-export function ShowDashboard() {
+export function ShowDeveloper() {
   return <NavBar />;
 }
 
-export default ShowDashboard;
+export default ShowDeveloper;

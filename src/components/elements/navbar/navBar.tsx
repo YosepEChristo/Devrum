@@ -1,13 +1,10 @@
-import { useState } from "react";
+// app/components/elements/navbar/Navbar.tsx
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
-  };
+  const pathname = usePathname();
 
   const navOptions = [
     {
@@ -19,18 +16,23 @@ const Navbar = () => {
     },
     {
       id: 1,
-      text: "Dashboard",
+      text: "Projects",
       defaultImg: "/assets/navbar/dashboard_grey.png",
       activeImg: "/assets/navbar/dashboard.png",
-      link: "/dashboard",
+      link: "/projects",
     },
     {
       id: 2,
       text: "Developer",
       defaultImg: "/assets/navbar/developer_grey.png",
       activeImg: "/assets/navbar/developer.png",
+      link: "/developer",
     },
   ];
+
+  const isActive = (link: string) => {
+    return pathname === link;
+  };
 
   return (
     <nav className="flex flex-col bg-white w-[220px] h-screen pt-3">
@@ -41,22 +43,21 @@ const Navbar = () => {
         height={31}
         className="pl-2 mb-[40px]"
       />
-      {navOptions.map((option, index) => (
-        <Link href={option.link ?? "/"} key={option.id} passHref>
-          <button
-            className={`flex ${
-              activeIndex === index ? "text-purple_s" : "text-grey_t"
-            }`}
-            onClick={() => handleClick(index)}
-          >
+      {navOptions.map((option) => (
+        <Link href={option.link} key={option.id} passHref>
+          <button className="flex w-full">
             <Image
               width={25}
               height={25}
-              src={activeIndex === index ? option.activeImg : option.defaultImg}
+              src={isActive(option.link) ? option.activeImg : option.defaultImg}
               alt={option.text}
               className="my-4 ml-4"
             />
-            <span className="text-[20px] font-medium ml-2 my-4">
+            <span
+              className={`text-[20px] font-medium ml-2 my-4 ${
+                isActive(option.link) ? "text-purple_s" : "text-grey_s"
+              }`}
+            >
               {option.text}
             </span>
           </button>
