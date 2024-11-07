@@ -1,6 +1,8 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto_Condensed } from "next/font/google";
+import { ProjectContextProvider } from "@/context/ProjectContext";
 
 // Use Roboto Condensed font
 const robotoCondensed = Roboto_Condensed({
@@ -22,7 +24,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={robotoCondensed.className}>
-        <main>{children}</main>
+        <ProjectContextProvider>
+          {" "}
+          {/* Wrap with the context provider */}
+          <main>{children}</main>
+        </ProjectContextProvider>
       </body>
     </html>
   );

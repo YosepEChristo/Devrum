@@ -1,8 +1,10 @@
+// src/components/pages/organizations/ShowOrganizations.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import NavBar from "@/components/elements/navbar/navBar";
+import { useProjectContext } from "@/context/ProjectContext";
+import Navbar from "@/components/elements/navbar/NavBar";
 import {
   getOrganizations,
   getProjectsByOrganizationId,
@@ -20,73 +22,54 @@ interface Project {
 
 export function ShowOrganizations() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState<boolean>(false);
+  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null); // Track selected organization
+  const { setSelectedProjectId } = useProjectContext();
   const router = useRouter();
 
-  // Fetch organizations when component mounts
+  // Fetch organizations on component mount
   useEffect(() => {
     const fetchOrganizations = async () => {
-      try {
-        const orgs = await getOrganizations();
-        setOrganizations(orgs);
-      } catch (err) {
-        console.error("Failed to fetch organizations:", err);
-      }
+      const orgs = await getOrganizations();
+      setOrganizations(orgs);
     };
     fetchOrganizations();
   }, []);
 
-  // Fetch projects when an organization is selected
+  // Handle organization selection and fetch projects
   const handleSelectOrganization = async (orgId: string) => {
-    setSelectedOrgId(orgId);
+    setSelectedOrgId(orgId); // Set selected organization ID
     setLoadingProjects(true);
-    try {
-      const orgProjects = await getProjectsByOrganizationId(orgId);
-      setProjects(orgProjects);
-    } catch (err) {
-      console.error("Failed to fetch projects:", err);
-    } finally {
-      setLoadingProjects(false);
-    }
+    const orgProjects = await getProjectsByOrganizationId(orgId);
+    setProjects(orgProjects);
+    setLoadingProjects(false);
   };
 
-  // Navigate to project page
+  // Handle project selection
   const handleProjectClick = (projectId: string) => {
-    try {
-      router.push(`/projects/${projectId}`);
-    } catch (error) {
-      console.error("navigation failed:", error);
-    }
+    setSelectedProjectId(projectId); // Set selected project globally
+    router.push(`/projects/${projectId}`); // Navigate to project page
   };
 
   return (
     <div className="flex h-screen">
-      <NavBar />
+      <Navbar />
       <div className="flex-1 px-[25px] py-[18px]">
         <div className="bg-white shadow-lg rounded-lg text-left w-[1300px] h-auto p-6 mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-[30px] text-grey_s font-semibold">
-                Your Organization
-              </h2>
-              <p className="text-[25px] text-grey_s">
-                Select your Organization:
-              </p>
-            </div>
-          </div>
-
-          {/* Display organizations */}
+          <h2 className="text-[30px] font-semibold text-gray-600">
+            Your Organization
+          </h2>
+          <p className="text-[25px] text-gray-600">Select your Organization:</p>
           <div className="mt-4 flex space-x-4">
             {organizations.map((org) => (
               <button
                 key={org.id}
-                className={`${
+                className={`font-semibold px-5 py-2 rounded-lg w-[170px] h-[50px] border ${
                   selectedOrgId === org.id
                     ? "bg-purple_s text-white"
-                    : "bg-white text-purple_s border border-purple_s"
-                } font-semibold px-5 py-2 rounded-lg w-[170px] h-[50px]`}
+                    : "bg-white hover:text-purple_s text-grey_s border-grey_s hover:border-purple_s"
+                }`}
                 onClick={() => handleSelectOrganization(org.id)}
               >
                 {org.name}
@@ -95,12 +78,11 @@ export function ShowOrganizations() {
           </div>
         </div>
 
-        {/* Project Section */}
         <div className="bg-white shadow-lg rounded-lg text-left w-[1300px] h-auto p-6">
-          <h2 className="text-[30px] text-grey_s font-semibold">
+          <h2 className="text-[30px] font-semibold text-gray-600">
             Your Project
           </h2>
-          <p className="text-[25px] text-grey_s">Select your Project:</p>
+          <p className="text-[25px] text-gray-600">Select your Project:</p>
 
           {loadingProjects ? (
             <p>Loading projects...</p>
@@ -110,7 +92,7 @@ export function ShowOrganizations() {
                 projects.map((project) => (
                   <button
                     key={project.id}
-                    className="bg-white font-semibold text-grey_s px-6 py-3 rounded-lg shadow-lg"
+                    className="font-semibold border border-grey_s px-5 py-2 rounded-lg text-grey_s hover:border-purple_s hover:bg-purple_s hover:text-white"
                     onClick={() => handleProjectClick(project.id)}
                   >
                     {project.name}
