@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProjectContext } from "../../../context/ProjectContext";
-import Navbar from "../../elements/navbar/NavBar";
+import Navbar from "../elements/navbar/NavBar";
 import {
   getOrganizations,
   getProjectsByOrganizationId,

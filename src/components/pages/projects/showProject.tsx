@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "../../elements/navbar/NavBar";
+import Navbar from "../elements/navbar/NavBar";
 import { useParams, useRouter } from "next/navigation";
 import { getDevelopersByProjectId } from "../../../lib/organizationDB";
 import { useProjectContext } from "../../../context/ProjectContext";

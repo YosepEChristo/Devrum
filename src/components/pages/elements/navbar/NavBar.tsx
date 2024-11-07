@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC } from "react";
-import { useProjectContext } from "../../../context/ProjectContext";
+import { useProjectContext } from "../../../../context/ProjectContext";
 
 const Navbar: FC = () => {
   const pathname = usePathname();
