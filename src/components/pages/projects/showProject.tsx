@@ -2,10 +2,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/elements/navbar/NavBar";
+import Navbar from "../../elements/navbar/NavBar";
 import { useParams, useRouter } from "next/navigation";
-import { getDevelopersByProjectId } from "@/lib/organizationDB";
-import { useProjectContext } from "@/context/ProjectContext";
+import { getDevelopersByProjectId } from "../../../lib/organizationDB";
+import { useProjectContext } from "../../../context/ProjectContext";
 // Import Chart.js components
 import { Bar, Line } from "react-chartjs-2";
 import {

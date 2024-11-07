@@ -1,8 +1,8 @@
 // src/components/pages/developer/ShowDeveloper.tsx
 "use client";
 
-import { useProjectContext } from "@/context/ProjectContext";
-import Navbar from "@/components/elements/navbar/NavBar";
+import { useProjectContext } from "../../../context/ProjectContext";
+import Navbar from "../../elements/navbar/NavBar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 

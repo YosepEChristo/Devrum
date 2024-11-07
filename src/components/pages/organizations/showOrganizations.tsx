@@ -3,12 +3,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useProjectContext } from "@/context/ProjectContext";
-import Navbar from "@/components/elements/navbar/NavBar";
+import { useProjectContext } from "../../../context/ProjectContext";
+import Navbar from "../../elements/navbar/NavBar";
 import {
   getOrganizations,
   getProjectsByOrganizationId,
-} from "@/lib/organizationDB";
+} from "../../../lib/organizationDB";
 
 interface Organization {
   id: string;
