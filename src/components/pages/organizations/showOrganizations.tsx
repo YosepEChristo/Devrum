@@ -1,19 +1,11 @@
-// src/components/pages/organizations/ShowOrganizations.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProjectContext } from "../../../context/ProjectContext";
 import Navbar from "../elements/navbar/NavBar";
-import {
-  getOrganizations,
-  getProjectsByOrganizationId,
-} from "../../../lib/organizationDB";
-
-interface Organization {
-  id: string;
-  name: string;
-}
+import axios from "axios";
+import { getAccessTokenFromCookie } from "../../../utils/refreshTokenHandler";
 
 interface Project {
   id: string;
@@ -21,35 +13,56 @@ interface Project {
 }
 
 export function ShowOrganizations() {
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [organizationNameInput, setOrganizationNameInput] =
+    useState<string>("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState<boolean>(false);
-  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null); // Track selected organization
-  const { setSelectedProjectId } = useProjectContext();
+  const { setSelectedProjectId, setOrganizationName } = useProjectContext();
   const router = useRouter();
 
-  // Fetch organizations on component mount
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      const orgs = await getOrganizations();
-      setOrganizations(orgs);
-    };
-    fetchOrganizations();
-  }, []);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOrganizationNameInput(event.target.value);
+  };
 
-  // Handle organization selection and fetch projects
-  const handleSelectOrganization = async (orgId: string) => {
-    setSelectedOrgId(orgId); // Set selected organization ID
+  const fetchProjects = async () => {
+    if (!organizationNameInput) {
+      alert("Please enter an organization name.");
+      return;
+    }
+
+    // Set the organization name in context
+    setOrganizationName(organizationNameInput);
+
     setLoadingProjects(true);
-    const orgProjects = await getProjectsByOrganizationId(orgId);
-    setProjects(orgProjects);
+    try {
+      const accessToken = getAccessTokenFromCookie();
+      console.log("Access Token from Cookie:", accessToken);
+
+      if (!accessToken) {
+        alert("Access token is not available. Please log in again.");
+        setLoadingProjects(false);
+        return;
+      }
+
+      const response = await axios.get(
+        `https://dev.azure.com/${organizationNameInput}/_apis/projects?api-version=6.0`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setProjects(response.data.value);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      alert("Failed to fetch projects. Please check the organization name.");
+    }
     setLoadingProjects(false);
   };
 
-  // Handle project selection
   const handleProjectClick = (projectId: string) => {
-    setSelectedProjectId(projectId); // Set selected project globally
-    router.push(`/projects/${projectId}`); // Navigate to project page
+    setSelectedProjectId(projectId);
+    router.push(`/projects/${projectId}`);
   };
 
   return (
@@ -60,21 +73,21 @@ export function ShowOrganizations() {
           <h2 className="text-[30px] font-semibold text-gray-600">
             Your Organization
           </h2>
-          <p className="text-[25px] text-gray-600">Select your Organization:</p>
-          <div className="mt-4 flex space-x-4">
-            {organizations.map((org) => (
-              <button
-                key={org.id}
-                className={`font-semibold px-5 py-2 rounded-lg w-[170px] h-[50px] border ${
-                  selectedOrgId === org.id
-                    ? "bg-purple_s text-white"
-                    : "bg-white hover:text-purple_s text-grey_s border-grey_s hover:border-purple_s"
-                }`}
-                onClick={() => handleSelectOrganization(org.id)}
-              >
-                {org.name}
-              </button>
-            ))}
+          <p className="text-[25px] text-gray-600">Write your Organization:</p>
+          <div className="mt-4 flex items-center space-x-4">
+            <input
+              type="text"
+              value={organizationNameInput}
+              onChange={handleInputChange}
+              placeholder="Enter organization name"
+              className="font-semibold text-grey_s px-5 py-2 rounded-lg w-[400px] h-[50px] border border-grey_s"
+            />
+            <button
+              className="font-semibold px-5 py-2 rounded-lg w-[170px] h-[50px] bg-purple_s text-white hover:bg-purple-700"
+              onClick={fetchProjects}
+            >
+              Fetch Projects
+            </button>
           </div>
         </div>
 

@@ -1,12 +1,21 @@
 "use client";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-export function SignIn() {
-  const router = useRouter();
+import React, { useEffect } from "react";
+import { startTokenRefresh } from "@/utils/refreshTokenHandler";
 
+export function SignIn() {
   const handleLogin = () => {
-    router.push("/organizations");
+    window.location.href = "/api/auth/login";
   };
+
+  useEffect(() => {
+    const refreshToken = sessionStorage.getItem("refreshToken");
+    const expiresIn = sessionStorage.getItem("expiresIn");
+
+    if (refreshToken && expiresIn) {
+      startTokenRefresh(refreshToken, parseInt(expiresIn, 10));
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center h-screen">

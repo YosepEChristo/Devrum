@@ -1,14 +1,14 @@
-// src/components/elements/navbar/NavBar.tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FC } from "react";
 import { useProjectContext } from "../../../../context/ProjectContext";
 
 const Navbar: FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { selectedProjectId, selectedDeveloper } = useProjectContext();
 
   const navOptions = [
@@ -37,6 +37,17 @@ const Navbar: FC = () => {
     },
   ];
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      router.push("/auth"); // Redirect ke halaman login
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
+
   return (
     <nav className="flex flex-col bg-white w-[220px] h-screen pt-3">
       <Image
@@ -52,19 +63,12 @@ const Navbar: FC = () => {
             className={`flex w-full items-center ${
               option.isDisabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            onClick={() => {
-              if (option.isDisabled) {
-                alert(
-                  "Please select a project and developer before navigating."
-                );
-              }
-            }}
           >
             <Image
               width={25}
               height={25}
               src={
-                pathname.startsWith(option.link)
+                pathname?.startsWith(option.link)
                   ? option.activeImg
                   : option.defaultImg
               }
@@ -73,7 +77,7 @@ const Navbar: FC = () => {
             />
             <span
               className={`text-[20px] font-medium ml-2 my-4 ${
-                pathname.startsWith(option.link)
+                pathname?.startsWith(option.link)
                   ? "text-purple-600"
                   : "text-gray-600"
               }`}
@@ -83,6 +87,13 @@ const Navbar: FC = () => {
           </button>
         </Link>
       ))}
+
+      <button
+        onClick={handleLogout}
+        className="mt-auto mb-4 mx-4 px-4 py-2 bg-red-600 text-gray-700 font-semibold rounded-lg hover:bg-red-500"
+      >
+        Logout
+      </button>
     </nav>
   );
 };

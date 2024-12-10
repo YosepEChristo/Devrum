@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto_Condensed } from "next/font/google";
 import { ProjectContextProvider } from "@/context/ProjectContext";
+import RefreshTokenInitializer from "@/components/RefreshTokenInitializer";
 
 // Use Roboto Condensed font
 const robotoCondensed = Roboto_Condensed({
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={robotoCondensed.className}>
         <ProjectContextProvider>
           {" "}
+          <RefreshTokenInitializer />
           {/* Wrap with the context provider */}
           <main>{children}</main>
         </ProjectContextProvider>
