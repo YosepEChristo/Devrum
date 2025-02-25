@@ -1,15 +1,14 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto_Condensed } from "next/font/google";
-import { ProjectContextProvider } from "@/context/ProjectContext";
 import RefreshTokenInitializer from "@/components/RefreshTokenInitializer";
+import { Providers } from "@/provider/Provider";
 
-// Use Roboto Condensed font
+// Gunakan font Roboto Condensed
 const robotoCondensed = Roboto_Condensed({
-  weight: ["400", "700"], // Specify the weights you need
+  weight: ["400", "700"],
   subsets: ["latin"],
-  variable: "--font-roboto-condensed", // Custom CSS variable for the font
+  variable: "--font-roboto-condensed",
 });
 
 export const metadata: Metadata = {
@@ -25,12 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={robotoCondensed.className}>
-        <ProjectContextProvider>
-          {" "}
+        <Providers>
           <RefreshTokenInitializer />
-          {/* Wrap with the context provider */}
           <main>{children}</main>
-        </ProjectContextProvider>
+        </Providers>
       </body>
     </html>
   );

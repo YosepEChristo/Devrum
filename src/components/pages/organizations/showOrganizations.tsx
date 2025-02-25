@@ -13,11 +13,13 @@ interface Project {
 }
 
 export function ShowOrganizations() {
-  const [organizationNameInput, setOrganizationNameInput] =
-    useState<string>("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState<boolean>(false);
-  const { setSelectedProjectId, setOrganizationName } = useProjectContext();
+  const { setSelectedProjectId, setOrganizationName, organizationName } =
+    useProjectContext();
+  const [organizationNameInput, setOrganizationNameInput] = useState<string>(
+    organizationName || "" // Load initial value from context
+  );
   const router = useRouter();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,13 +32,11 @@ export function ShowOrganizations() {
       return;
     }
 
-    // Set the organization name in context
     setOrganizationName(organizationNameInput);
 
     setLoadingProjects(true);
     try {
       const accessToken = getAccessTokenFromCookie();
-      console.log("Access Token from Cookie:", accessToken);
 
       if (!accessToken) {
         alert("Access token is not available. Please log in again.");
@@ -70,7 +70,7 @@ export function ShowOrganizations() {
       <Navbar />
       <div className="flex-1 px-[25px] py-[18px]">
         <div className="bg-white shadow-lg rounded-lg text-left w-[1300px] h-auto p-6 mb-8">
-          <h2 className="text-[30px] font-semibold text-gray-600">
+          <h2 className="text-[30px] font-semibold text-purple_s">
             Your Organization
           </h2>
           <p className="text-[25px] text-gray-600">Write your Organization:</p>
@@ -92,28 +92,22 @@ export function ShowOrganizations() {
         </div>
 
         <div className="bg-white shadow-lg rounded-lg text-left w-[1300px] h-auto p-6">
-          <h2 className="text-[30px] font-semibold text-gray-600">
+          <h2 className="text-[30px] font-semibold text-purple_s">
             Your Project
           </h2>
-          <p className="text-[25px] text-gray-600">Select your Project:</p>
-
           {loadingProjects ? (
             <p>Loading projects...</p>
           ) : (
             <div className="mt-4 flex space-x-4">
-              {projects.length > 0 ? (
-                projects.map((project) => (
-                  <button
-                    key={project.id}
-                    className="font-semibold border border-grey_s px-5 py-2 rounded-lg text-grey_s hover:border-purple_s hover:bg-purple_s hover:text-white"
-                    onClick={() => handleProjectClick(project.id)}
-                  >
-                    {project.name}
-                  </button>
-                ))
-              ) : (
-                <p>No projects available for this organization.</p>
-              )}
+              {projects.map((project) => (
+                <button
+                  key={project.id}
+                  className="font-semibold border border-grey_s px-5 py-2 rounded-lg text-grey_s hover:border-purple_s hover:bg-purple_s hover:text-white"
+                  onClick={() => handleProjectClick(project.id)}
+                >
+                  {project.name}
+                </button>
+              ))}
             </div>
           )}
         </div>
