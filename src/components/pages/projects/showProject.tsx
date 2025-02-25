@@ -6,33 +6,46 @@ import { useProjectContext } from "../../../context/ProjectContext";
 import {
   fetchProjectAndDevelopers,
   Developer,
+  fetchUserStoriesForDeveloper,
+  UserStory,
 } from "@/service/workItemService";
 import { useRouter } from "next/navigation";
+import { Bar, Line } from "react-chartjs-2";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  CartesianGrid,
   Legend,
-} from "recharts";
+  PointElement,
+  LineElement,
+} from "chart.js";
+
+// Registrasi elemen Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement
+);
 
 export function ShowProject() {
   const [developerData, setDeveloperData] = useState<Developer[]>([]);
   const [projectName, setProjectName] = useState<string>("Unknown");
   const [error, setError] = useState<string | null>(null);
-  const { organizationName, selectedProjectId } = useProjectContext();
+  const { organizationName, selectedProjectId, setSelectedDeveloper } =
+    useProjectContext();
+  const router = useRouter();
 
-  const [defectData, setDefectData] = useState<
-    { severity: string; count: number }[]
-  >([]);
-  const [burndownData, setBurndownData] = useState<
-    { sprint: string; count: number }[]
-  >([]);
+  const [sprintNames, setSprintNames] = useState<string[]>([]);
+  const [bugCounts, setBugCounts] = useState<number[]>([]);
+  const [burndownData, setBurndownData] = useState<number[]>([]);
 
   useEffect(() => {
     const loadProjectData = async () => {
@@ -48,6 +61,19 @@ export function ShowProject() {
         );
         setProjectName(projectName);
         setDeveloperData(developers);
+
+        // Fetch User Stories dan Bugs untuk Burndown dan Defect Chart
+        const allStories: UserStory[] = [];
+        for (const dev of developers) {
+          const stories = await fetchUserStoriesForDeveloper(
+            organizationName,
+            selectedProjectId,
+            dev.name
+          );
+          allStories.push(...stories);
+        }
+
+        processChartData(allStories);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred.");
       }
@@ -55,6 +81,71 @@ export function ShowProject() {
 
     loadProjectData();
   }, [selectedProjectId, organizationName]);
+
+  // Proses data untuk chart
+  const processChartData = (stories: UserStory[]) => {
+    const sprintMap: Record<string, { bugs: number; totalWorkItems: number }> =
+      {};
+
+    stories.forEach((story) => {
+      if (!sprintMap[story.sprint]) {
+        sprintMap[story.sprint] = { bugs: 0, totalWorkItems: 0 };
+      }
+
+      // Hanya work items yang statusnya bukan "Done" yang dihitung
+      if (story.status.toLowerCase() !== "done") {
+        sprintMap[story.sprint].totalWorkItems += 1;
+      }
+
+      // Hitung jumlah bug di sprint tersebut
+      if (story.type.toLowerCase() === "bug") {
+        sprintMap[story.sprint].bugs += 1;
+      }
+    });
+
+    const sprints = Object.keys(sprintMap).sort();
+    const bugCounts = sprints.map((sprint) => sprintMap[sprint].bugs);
+    const burndownData = sprints.map(
+      (sprint) => sprintMap[sprint].totalWorkItems
+    );
+
+    setSprintNames(sprints);
+    setBugCounts(bugCounts);
+    setBurndownData(burndownData);
+  };
+
+  // Konfigurasi data untuk Defect Bar Chart
+  const defectChartData = {
+    labels: sprintNames,
+    datasets: [
+      {
+        label: "Defects Found",
+        data: bugCounts,
+        backgroundColor: "rgba(255, 99, 132, 0.6)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Konfigurasi data untuk Burndown Chart
+  const burndownChartData = {
+    labels: sprintNames,
+    datasets: [
+      {
+        label: "Remaining Work Items",
+        data: burndownData,
+        borderColor: "rgba(54, 162, 235, 1)",
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+        fill: true,
+      },
+    ],
+  };
+
+  const handleDeveloperClick = (developer: Developer) => {
+    setSelectedDeveloper(developer);
+    router.push("/developer");
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -66,7 +157,6 @@ export function ShowProject() {
           </div>
         )}
         <div className="flex flex-col">
-          {/* Project Header */}
           <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
             <h2 className="text-[30px] font-semibold text-gray-600">
               Project: {projectName}
@@ -79,42 +169,23 @@ export function ShowProject() {
             </h2>
           </div>
 
-          {/* Charts Row */}
+          {/* Chart Section */}
           <div className="flex space-x-4 mb-8">
-            {/* Defect Chart */}
-            <div className="bg-white shadow-lg rounded-lg p-6 w-1/2">
-              <h2 className="text-xl font-bold text-gray-700">
-                Defect Severity Chart
+            <div className="bg-white shadow-lg rounded-lg p-6 flex-1">
+              <h2 className="text-lg font-semibold text-gray-600 mb-4">
+                Defect Bar Chart
               </h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={defectData}>
-                  <XAxis dataKey="severity" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#FF5733" />
-                </BarChart>
-              </ResponsiveContainer>
+              <Bar data={defectChartData} />
             </div>
 
-            {/* Burndown Chart */}
-            <div className="bg-white shadow-lg rounded-lg p-6 w-1/2">
-              <h2 className="text-xl font-bold text-gray-700">
+            <div className="bg-white shadow-lg rounded-lg p-6 flex-1">
+              <h2 className="text-lg font-semibold text-gray-600 mb-4">
                 Burndown Chart
               </h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={burndownData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="sprint" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="count" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
+              <Line data={burndownChartData} />
             </div>
           </div>
 
-          {/* Developer Table */}
           <div className="bg-white shadow-lg rounded-lg text-left w-[1300px] h-auto p-6 mb-8">
             <h1 className="text-2xl font-bold mb-4 text-grey_s">
               Developers in this Project
@@ -133,13 +204,14 @@ export function ShowProject() {
                   developerData.map((dev, index) => (
                     <tr
                       key={index}
+                      onClick={() => handleDeveloperClick(dev)}
                       className="hover:bg-gray-100 cursor-pointer"
                     >
                       <td className="border px-4 py-2 text-grey_s text-center">
                         {dev.name}
                       </td>
                       <td className="border px-4 py-2 text-grey_s text-center">
-                        {dev.score}
+                        {dev.score.toFixed(2)}
                       </td>
                     </tr>
                   ))
