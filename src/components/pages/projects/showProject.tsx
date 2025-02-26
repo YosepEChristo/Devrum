@@ -217,7 +217,10 @@ export function ShowProject() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={2} className="border px-4 py-2 text-center">
+                    <td
+                      colSpan={2}
+                      className="border px-4 py-2 text-grey_s text-center"
+                    >
                       No developers found for this project.
                     </td>
                   </tr>

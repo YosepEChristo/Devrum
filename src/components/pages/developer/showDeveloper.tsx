@@ -108,7 +108,20 @@ export function ShowDeveloper() {
               </div>
             ))
           ) : (
-            <p>No user stories found.</p>
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-gray-600 mb-4">
+                User Stories
+              </h2>
+              <table className="min-w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="text-grey_s">
+                    <th className="border border-gray-200 bg-gray-50  px-4 py-2 text-center">
+                      No User Stories Found
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
           )}
         </div>
 
@@ -170,7 +183,7 @@ export function ShowDeveloper() {
               <div>
                 <h3 className="text-lg text-grey_s font-semibold">Done</h3>
                 <p className="text-gray-700">
-                  {selectedDeveloper.storyPoints || "-"} story points
+                  {selectedDeveloper.storyPoints || "0.00"} story points
                 </p>
               </div>
             </div>
@@ -187,7 +200,7 @@ export function ShowDeveloper() {
                   Bugs Fix Score
                 </h3>
                 <p className="text-gray-700">
-                  {selectedDeveloper.bugFixScore || "-"} Points
+                  {selectedDeveloper.bugFixScore || "0.00"} Points
                 </p>
               </div>
             </div>
