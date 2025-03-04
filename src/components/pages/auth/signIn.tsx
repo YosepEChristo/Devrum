@@ -18,26 +18,40 @@ export function SignIn() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="bg-white shadow-lg rounded-lg p-5 text-center w-[600px] h-[396px]">
+    <div className="flex items-center justify-center min-h-screen bg-gray-200">
+      <div className="bg-white shadow-lg rounded-2xl p-8 text-center w-[450px]">
+        {/* Logo Devrum */}
         <Image
           src="/assets/devrum.png"
           alt="Devrum Logo"
-          width={250}
-          height={71}
-          className="mx-auto mt-[33px] mb-[100px]"
+          width={220}
+          height={60}
+          className="mx-auto mt-6"
         />
 
+        {/* Deskripsi Devrum */}
+        <p className="mt-4 text-gray-700 text-sm leading-relaxed px-4">
+          <strong>Devrum</strong> adalah platform yang membantu Anda mengukur
+          produktivitas developer menggunakan metode <strong>Scrum</strong>.
+          Dengan integrasi ke <strong>Azure DevOps</strong>, Devrum memungkinkan
+          evaluasi kinerja berdasarkan{" "}
+          <strong>Story Points, Velocity, dan Bug Fix Score</strong>.
+        </p>
+
+        {/* Tombol Login dengan warna yang diperbarui */}
         <button
-          className="bg-purple_s hover:bg-blue_s text-white font-medium py-2 px-6 rounded-full 
-          w-[350px] h-[70px] text-[22px]"
+          className="mt-6 bg-purple_s text-white font-semibold py-3 px-8 rounded-full w-[85%] text-lg shadow-md"
           onClick={handleLogin}
         >
           Login with Azure Account
         </button>
 
-        <p className="mt-4 text-blue_s text-sm font-regular">
-          Don&apos;t have an account yet?
+        {/* Informasi Akun */}
+        <p className="mt-6 text-gray-600 text-sm">
+          Don&apos;t have an account yet?{" "}
+          <span className="text-blue_s cursor-pointer hover:underline">
+            Sign up here
+          </span>
         </p>
       </div>
     </div>
