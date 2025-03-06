@@ -49,7 +49,10 @@ export function SignIn() {
         {/* Informasi Akun */}
         <p className="mt-6 text-gray-600 text-sm">
           Don&apos;t have an account yet?{" "}
-          <span className="text-blue_s cursor-pointer hover:underline">
+          <span
+            className="text-blue_s cursor-pointer hover:underline"
+            onClick={() => (window.location.href = "https://signup.live.com")}
+          >
             Sign up here
           </span>
         </p>

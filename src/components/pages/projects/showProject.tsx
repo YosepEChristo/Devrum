@@ -164,9 +164,6 @@ export function ShowProject() {
             <h2 className="text-[30px] font-semibold text-gray-600">
               Organization: {organizationName}
             </h2>
-            <h2 className="text-[30px] font-semibold text-gray-600">
-              Project ID: {selectedProjectId}
-            </h2>
           </div>
 
           {/* Chart Section */}
@@ -194,8 +191,8 @@ export function ShowProject() {
               <thead>
                 <tr className="bg-purple_s">
                   <th className="border px-4 py-2 text-center">Name</th>
-                  <th className="border px-4 py-2 text-center">
-                    Developer Score
+                  <th className="border px-4 py-2 text-center w-[30%]">
+                    Developer Performance Score
                   </th>
                 </tr>
               </thead>
@@ -210,7 +207,7 @@ export function ShowProject() {
                       <td className="border px-4 py-2 text-grey_s text-center">
                         {dev.name}
                       </td>
-                      <td className="border px-4 py-2 text-grey_s text-center">
+                      <td className="border px-4 py-2 text-grey_s text-center w-[30%]">
                         {dev.score.toFixed(2)}
                       </td>
                     </tr>
