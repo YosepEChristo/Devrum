@@ -190,10 +190,10 @@ export const fetchProjectAndDevelopers = async (
           severityScore = 5;
           break;
         case "2 - high":
-          severityScore = 4;
+          severityScore = 3;
           break;
         case "3 - medium":
-          severityScore = 3;
+          severityScore = 2;
           break;
         case "4 - low":
           severityScore = 1;
@@ -205,7 +205,7 @@ export const fetchProjectAndDevelopers = async (
 
   Object.values(developerMap).forEach((dev) => {
     dev.score =
-      0.5 * dev.storyPoints + 0.25 * dev.velocity + 0.25 * dev.bugFixScore;
+      0.6 * dev.storyPoints + 0.2 * dev.velocity + 0.2 * dev.bugFixScore;
   });
 
   return { projectName, developers: Object.values(developerMap) };

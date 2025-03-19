@@ -37,6 +37,9 @@ ChartJS.register(
 
 export function ShowProject() {
   const [developerData, setDeveloperData] = useState<Developer[]>([]);
+  const [originalDeveloperData, setOriginalDeveloperData] = useState<
+    Developer[]
+  >([]);
   const [projectName, setProjectName] = useState<string>("Unknown");
   const [error, setError] = useState<string | null>(null);
   const { organizationName, selectedProjectId, setSelectedDeveloper } =
@@ -46,6 +49,12 @@ export function ShowProject() {
   const [sprintNames, setSprintNames] = useState<string[]>([]);
   const [bugCounts, setBugCounts] = useState<number[]>([]);
   const [burndownData, setBurndownData] = useState<number[]>([]);
+
+  // State untuk bobot DPS
+  const [storyPointsWeight, setStoryPointsWeight] = useState<number>(60);
+  const [velocityWeight, setVelocityWeight] = useState<number>(20);
+  const [bugFixWeight, setBugFixWeight] = useState<number>(20);
+  const [weightError, setWeightError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProjectData = async () => {
@@ -61,6 +70,7 @@ export function ShowProject() {
         );
         setProjectName(projectName);
         setDeveloperData(developers);
+        setOriginalDeveloperData(JSON.parse(JSON.stringify(developers))); // Deep copy untuk backup
 
         // Fetch User Stories dan Bugs untuk Burndown dan Defect Chart
         const allStories: UserStory[] = [];
@@ -114,7 +124,11 @@ export function ShowProject() {
     setBurndownData(burndownData);
   };
 
-  // Konfigurasi data untuk Defect Bar Chart
+  // Hitung nilai maksimum untuk membuat "spare" di bagian atas
+  const maxBugs = bugCounts.length > 0 ? Math.max(...bugCounts) : 0;
+  const maxBurndown = burndownData.length > 0 ? Math.max(...burndownData) : 0;
+
+  // Konfigurasi chart untuk Defect Bar Chart
   const defectChartData = {
     labels: sprintNames,
     datasets: [
@@ -128,7 +142,20 @@ export function ShowProject() {
     ],
   };
 
-  // Konfigurasi data untuk Burndown Chart
+  const defectChartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        suggestedMax: maxBugs + 1,
+        ticks: {
+          stepSize: 1,
+          precision: 0,
+        },
+      },
+    },
+  };
+
+  // Konfigurasi chart untuk Burndown Chart
   const burndownChartData = {
     labels: sprintNames,
     datasets: [
@@ -142,9 +169,82 @@ export function ShowProject() {
     ],
   };
 
+  const burndownChartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        suggestedMax: maxBurndown + 1,
+        ticks: {
+          stepSize: 1,
+          precision: 0,
+        },
+      },
+    },
+  };
+
   const handleDeveloperClick = (developer: Developer) => {
     setSelectedDeveloper(developer);
     router.push("/developer");
+  };
+
+  // Handle weight input change
+  const handleWeightChange = (
+    setter: React.Dispatch<React.SetStateAction<number>>,
+    value: string
+  ) => {
+    // Hapus karakter non-angka
+    let newValue = value.replace(/\D/g, "");
+
+    // Jika kosong, set 0 agar bisa dihapus
+    if (newValue === "") {
+      setter(0);
+      return;
+    }
+
+    // Hilangkan angka 0 di depan, kecuali jika hanya "0"
+    newValue = newValue.replace(/^0+(?=\d)/, "");
+
+    // Jika lebih dari 3 digit, potong menjadi 3 digit pertama
+    if (newValue.length > 3) {
+      newValue = newValue.slice(0, 3);
+    }
+
+    // Konversi ke angka
+    let numValue = Number(newValue);
+
+    // Jika lebih dari 100, ambil hanya 2 digit terakhir
+    if (numValue > 100) {
+      newValue = newValue.slice(-2);
+      numValue = Number(newValue);
+    }
+
+    setter(numValue);
+  };
+
+  // Handle recalculation of DPS
+  const recalculateDPS = () => {
+    // Check if weights sum to 100%
+    const totalWeight = storyPointsWeight + velocityWeight + bugFixWeight;
+    if (totalWeight !== 100) {
+      setWeightError("Weights must sum to 100%");
+      return;
+    }
+
+    setWeightError(null);
+
+    // Create a copy of the original data
+    const newDeveloperData = JSON.parse(JSON.stringify(originalDeveloperData));
+
+    // Recalculate scores using new weights
+    newDeveloperData.forEach((dev: Developer) => {
+      dev.score =
+        (storyPointsWeight / 100) * dev.storyPoints +
+        (velocityWeight / 100) * dev.velocity +
+        (bugFixWeight / 100) * dev.bugFixScore;
+    });
+
+    // Update the developer data with new scores
+    setDeveloperData(newDeveloperData);
   };
 
   return (
@@ -172,21 +272,88 @@ export function ShowProject() {
               <h2 className="text-lg font-semibold text-gray-600 mb-4">
                 Defect Bar Chart
               </h2>
-              <Bar data={defectChartData} />
+              <Bar data={defectChartData} options={defectChartOptions} />
             </div>
 
             <div className="bg-white shadow-lg rounded-lg p-6 flex-1">
               <h2 className="text-lg font-semibold text-gray-600 mb-4">
-                Burndown Chart
+                Carryover Backlog Chart
               </h2>
-              <Line data={burndownChartData} />
+              <Line data={burndownChartData} options={burndownChartOptions} />
             </div>
           </div>
 
           <div className="bg-white shadow-lg rounded-lg text-left w-[1300px] h-auto p-6 mb-8">
-            <h1 className="text-2xl font-bold mb-4 text-grey_s">
-              Developers in this Project
-            </h1>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-bold text-grey_s">
+                Developers in this Project
+              </h1>
+
+              <div className="flex items-center space-x-2">
+                {/* Input untuk Story Points */}
+                <div className="flex items-center">
+                  <div className="bg-blue-500 text-white p-2 rounded-l">
+                    Story Point
+                  </div>
+                  <input
+                    type="number"
+                    value={storyPointsWeight}
+                    onChange={(e) =>
+                      handleWeightChange(setStoryPointsWeight, e.target.value)
+                    }
+                    className="border text-grey_s border-gray-300 px-2 py-1 w-16 rounded-r"
+                    min=""
+                    max="100"
+                  />
+                </div>
+
+                {/* Input untuk Velocity */}
+                <div className="flex items-center">
+                  <div className="bg-green text-white p-2 rounded-l">
+                    Velocity
+                  </div>
+                  <input
+                    type="number"
+                    value={velocityWeight}
+                    onChange={(e) =>
+                      handleWeightChange(setVelocityWeight, e.target.value)
+                    }
+                    className="border text-grey_s border-gray-300 px-2 py-1 w-16 rounded-r"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+
+                {/* Input untuk Bug Fix Score */}
+                <div className="flex items-center">
+                  <div className="bg-red text-white p-2 rounded-l">Bug Fix</div>
+                  <input
+                    type="number"
+                    value={bugFixWeight}
+                    onChange={(e) =>
+                      handleWeightChange(setBugFixWeight, e.target.value)
+                    }
+                    className="border text-grey_s border-gray-300 px-2 py-1 w-16 rounded-r"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+
+                <button
+                  onClick={recalculateDPS}
+                  className="bg-purple_s text-white px-4 py-1 rounded hover:bg-purple-700"
+                >
+                  Calculate
+                </button>
+              </div>
+            </div>
+
+            {weightError && (
+              <div className="bg-red-100 text-red px-4 py-2 rounded mb-4">
+                {weightError}
+              </div>
+            )}
+
             <table className="min-w-full border-collapse border border-grey-700">
               <thead>
                 <tr className="bg-purple_s">
