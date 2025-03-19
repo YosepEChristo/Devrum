@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Navbar from "../elements/navbar/NavBar";
 import { useProjectContext } from "../../../context/ProjectContext";
+import { DpsWeights } from "../../../context/ProjectContext";
+
 import {
   fetchProjectAndDevelopers,
   Developer,
@@ -37,9 +39,7 @@ ChartJS.register(
 
 export function ShowProject() {
   const [developerData, setDeveloperData] = useState<Developer[]>([]);
-  const [originalDeveloperData, setOriginalDeveloperData] = useState<
-    Developer[]
-  >([]);
+  const { developerScores, setDeveloperScores } = useProjectContext();
   const [projectName, setProjectName] = useState<string>("Unknown");
   const [error, setError] = useState<string | null>(null);
   const { organizationName, selectedProjectId, setSelectedDeveloper } =
@@ -51,10 +51,18 @@ export function ShowProject() {
   const [burndownData, setBurndownData] = useState<number[]>([]);
 
   // State untuk bobot DPS
-  const [storyPointsWeight, setStoryPointsWeight] = useState<number>(60);
-  const [velocityWeight, setVelocityWeight] = useState<number>(20);
-  const [bugFixWeight, setBugFixWeight] = useState<number>(20);
   const [weightError, setWeightError] = useState<string | null>(null);
+  const { dpsWeights, updateDpsWeights } = useProjectContext();
+  const [newWeights, setNewWeights] = useState(dpsWeights);
+
+  useEffect(() => {
+    setDeveloperData((prev) =>
+      prev.map((dev) => ({
+        ...dev,
+        score: developerScores[dev.name] || dev.score, // Gunakan DPS lama jika ada
+      }))
+    );
+  }, [developerScores]);
 
   useEffect(() => {
     const loadProjectData = async () => {
@@ -69,8 +77,6 @@ export function ShowProject() {
           selectedProjectId
         );
         setProjectName(projectName);
-        setDeveloperData(developers);
-        setOriginalDeveloperData(JSON.parse(JSON.stringify(developers))); // Deep copy untuk backup
 
         // Fetch User Stories dan Bugs untuk Burndown dan Defect Chart
         const allStories: UserStory[] = [];
@@ -83,14 +89,22 @@ export function ShowProject() {
           allStories.push(...stories);
         }
 
-        processChartData(allStories);
+        processChartData(allStories); // Tetap jalankan pemrosesan chart
+
+        // Gabungkan data developer dengan DPS yang sudah ada
+        const updatedDevelopers = developers.map((dev) => ({
+          ...dev,
+          score: developerScores[dev.name] || dev.score, // Gunakan DPS lama jika ada
+        }));
+
+        setDeveloperData(updatedDevelopers);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred.");
       }
     };
 
     loadProjectData();
-  }, [selectedProjectId, organizationName]);
+  }, [selectedProjectId, organizationName, developerScores]); // Tambahkan dependency developerScores agar DPS tetap diperbarui
 
   // Proses data untuk chart
   const processChartData = (stories: UserStory[]) => {
@@ -188,16 +202,13 @@ export function ShowProject() {
   };
 
   // Handle weight input change
-  const handleWeightChange = (
-    setter: React.Dispatch<React.SetStateAction<number>>,
-    value: string
-  ) => {
+  const handleWeightChange = (field: keyof DpsWeights, value: string) => {
     // Hapus karakter non-angka
     let newValue = value.replace(/\D/g, "");
 
     // Jika kosong, set 0 agar bisa dihapus
     if (newValue === "") {
-      setter(0);
+      setNewWeights((prev) => ({ ...prev, [field]: 0 }));
       return;
     }
 
@@ -218,32 +229,33 @@ export function ShowProject() {
       numValue = Number(newValue);
     }
 
-    setter(numValue);
+    // Perbarui state bobot DPS
+    setNewWeights((prev) => ({ ...prev, [field]: numValue }));
   };
 
   // Handle recalculation of DPS
-  const recalculateDPS = () => {
-    // Check if weights sum to 100%
-    const totalWeight = storyPointsWeight + velocityWeight + bugFixWeight;
+  const handleRecalculate = () => {
+    const totalWeight =
+      newWeights.effort + newWeights.velocity + newWeights.bugFix;
     if (totalWeight !== 100) {
       setWeightError("Weights must sum to 100%");
       return;
     }
-
+    updateDpsWeights(newWeights);
     setWeightError(null);
 
-    // Create a copy of the original data
-    const newDeveloperData = JSON.parse(JSON.stringify(originalDeveloperData));
+    const newScores: Record<string, number> = {};
+    const newDeveloperData = developerData.map((dev) => {
+      const newScore =
+        (newWeights.effort / 100) * dev.storyPoints +
+        (newWeights.velocity / 100) * dev.velocity +
+        (newWeights.bugFix / 100) * dev.bugFixScore;
 
-    // Recalculate scores using new weights
-    newDeveloperData.forEach((dev: Developer) => {
-      dev.score =
-        (storyPointsWeight / 100) * dev.storyPoints +
-        (velocityWeight / 100) * dev.velocity +
-        (bugFixWeight / 100) * dev.bugFixScore;
+      newScores[dev.name] = newScore; // Simpan skor di state global
+      return { ...dev, score: newScore };
     });
 
-    // Update the developer data with new scores
+    setDeveloperScores((prevScores) => ({ ...prevScores, ...newScores })); // Simpan DPS agar tidak hilang saat berpindah halaman
     setDeveloperData(newDeveloperData);
   };
 
@@ -292,14 +304,14 @@ export function ShowProject() {
               <div className="flex items-center space-x-2">
                 {/* Input untuk Story Points */}
                 <div className="flex items-center">
-                  <div className="bg-blue-500 text-white p-2 rounded-l">
+                  <div className="bg-green text-white p-2 rounded-l">
                     Story Point
                   </div>
                   <input
                     type="number"
-                    value={storyPointsWeight}
+                    value={newWeights.effort}
                     onChange={(e) =>
-                      handleWeightChange(setStoryPointsWeight, e.target.value)
+                      handleWeightChange("effort", e.target.value)
                     }
                     className="border text-grey_s border-gray-300 px-2 py-1 w-16 rounded-r"
                     min=""
@@ -309,14 +321,14 @@ export function ShowProject() {
 
                 {/* Input untuk Velocity */}
                 <div className="flex items-center">
-                  <div className="bg-green text-white p-2 rounded-l">
+                  <div className="bg-blue_s text-white p-2 rounded-l">
                     Velocity
                   </div>
                   <input
                     type="number"
-                    value={velocityWeight}
+                    value={newWeights.velocity}
                     onChange={(e) =>
-                      handleWeightChange(setVelocityWeight, e.target.value)
+                      handleWeightChange("velocity", e.target.value)
                     }
                     className="border text-grey_s border-gray-300 px-2 py-1 w-16 rounded-r"
                     min="0"
@@ -329,9 +341,9 @@ export function ShowProject() {
                   <div className="bg-red text-white p-2 rounded-l">Bug Fix</div>
                   <input
                     type="number"
-                    value={bugFixWeight}
+                    value={newWeights.bugFix}
                     onChange={(e) =>
-                      handleWeightChange(setBugFixWeight, e.target.value)
+                      handleWeightChange("bugFix", e.target.value)
                     }
                     className="border text-grey_s border-gray-300 px-2 py-1 w-16 rounded-r"
                     min="0"
@@ -340,7 +352,7 @@ export function ShowProject() {
                 </div>
 
                 <button
-                  onClick={recalculateDPS}
+                  onClick={handleRecalculate}
                   className="bg-purple_s text-white px-4 py-1 rounded hover:bg-purple-700"
                 >
                   Calculate
