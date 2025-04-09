@@ -3,6 +3,7 @@ import "./globals.css";
 import { Roboto_Condensed } from "next/font/google";
 import RefreshTokenInitializer from "@/components/RefreshTokenInitializer";
 import { Providers } from "@/provider/Provider";
+import ClientWrapper from "./ClientWrapper"; // 🔹 Tambahkan ClientWrapper
 
 // Gunakan font Roboto Condensed
 const robotoCondensed = Roboto_Condensed({
@@ -14,6 +15,9 @@ const robotoCondensed = Roboto_Condensed({
 export const metadata: Metadata = {
   title: "Devrum",
   description: "App to monitor developer productivity",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -25,8 +29,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={robotoCondensed.className}>
         <Providers>
-          <RefreshTokenInitializer />
-          <main>{children}</main>
+          <ClientWrapper>
+            <RefreshTokenInitializer />{" "}
+            {/* 🔹 Bungkus dengan komponen client */}
+            <main>{children}</main>
+          </ClientWrapper>
         </Providers>
       </body>
     </html>

@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { FC } from "react";
+
 import { useProjectContext } from "../../../../context/ProjectContext";
+import logout from "@/utils/logout";
 
 const Navbar: FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const { selectedProjectId, selectedDeveloper } = useProjectContext();
 
   const navOptions = [
@@ -36,16 +37,12 @@ const Navbar: FC = () => {
       isDisabled: !selectedDeveloper,
     },
   ];
-
   const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-      router.push("/auth"); // Redirect ke halaman login
-    } catch (error) {
-      console.error("Failed to logout:", error);
-    }
+    console.log("🔘 Tombol logout ditekan");
+    await logout();
+    console.log("🔀 Redirect ke halaman login...");
+
+    window.location.href = "/auth"; // Redirect langsung ke halaman login
   };
 
   return (
