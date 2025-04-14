@@ -20,9 +20,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }),
   ]);
 
-  // Pakai endpoint logout Azure v1.0 (bukan v2.0)
   const redirectUri = encodeURIComponent(
-    process.env.REDIRECT_URI || "http://localhost:3000/auth"
+    process.env.LOGOUT_REDIRECT_URI || "http://localhost:3000/auth"
   );
 
   const logoutUrl = `https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=${redirectUri}`;
