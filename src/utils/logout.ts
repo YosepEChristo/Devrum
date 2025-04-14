@@ -1,46 +1,41 @@
 import Cookies from "js-cookie";
 
-const logout = async (): Promise<void> => {
+const logout = (): void => {
   try {
     console.log("🔘 Logout dimulai...");
 
-    // Hapus hanya token yang terkait, bukan semua storage
+    // Hapus token dari localStorage
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("expiresIn");
     localStorage.removeItem("selectedProjectId");
     localStorage.removeItem("organizationName");
 
+    // Hapus token dari sessionStorage
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("refreshToken");
     sessionStorage.removeItem("expiresIn");
 
+    // Hapus cookies via js-cookie
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
 
-    // Hapus cookies Microsoft/Azure yang mungkin tersimpan
+    // Hapus semua cookie domain (termasuk dari Azure AD)
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
         .replace(/^ +/, "")
         .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
     });
 
-    console.log("✅ Token lokal dihapus, menghubungi API logout...");
+    console.log(
+      "✅ Semua token & data lokal dihapus. Redirect ke logout backend..."
+    );
 
-    const response = await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-
-    if (response.redirected) {
-      console.log("🔁 Dialihkan ke Azure AD logout...");
-      window.location.href = response.url;
-    } else {
-      // Fallback: tetap arahkan ke /auth
-      window.location.href = "/auth";
-    }
+    // Langsung redirect ke API logout → akan lanjut logout dari Azure AD
+    window.location.href = "/api/auth/logout";
   } catch (error) {
-    console.error("❌ Logout gagal:", error);
+    console.error("❌ Logout error:", error);
+    // Fallback: tetap arahkan ke login
     window.location.href = "/auth";
   }
 };
