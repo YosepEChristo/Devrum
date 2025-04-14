@@ -37,10 +37,6 @@ const Navbar: FC = () => {
       isDisabled: !selectedDeveloper,
     },
   ];
-  const handleLogout = () => {
-    console.log("🔘 Tombol logout ditekan");
-    logout(); // langsung saja, biarkan utils/logout.ts yang handle redirect
-  };
 
   return (
     <nav className="flex flex-col bg-white w-[220px] min-h-screen pt-3 justify-between">
@@ -86,7 +82,7 @@ const Navbar: FC = () => {
 
       {/* Tombol Logout di bagian bawah */}
       <button
-        onClick={handleLogout}
+        onClick={logout}
         className="mb-4 mx-4 px-4 py-2 bg-red-600 text-gray-700 font-semibold rounded-lg hover:bg-red-500"
       >
         Logout
