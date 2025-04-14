@@ -17,13 +17,27 @@ export function SignIn() {
   };
 
   useEffect(() => {
-    // Generate cache buster saat komponen dimuat
+    // 🧹 Hapus semua token dari storage & cookie
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("expiresIn");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("expiresIn");
+
+    // Hapus semua cookies manual (untuk jaga-jaga)
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+    });
+
+    // Generate cache buster
     setCacheBuster(new Date().getTime().toString());
 
     // Clear cache Microsoft/Azure
     const clearMicrosoftCache = () => {
       try {
-        // Hapus cache dan storage yang mungkin menyimpan sesi
         if (window.sessionStorage) {
           sessionStorage.removeItem("msal.idtoken");
           sessionStorage.removeItem("msal.accessToken");
