@@ -1,43 +1,55 @@
 import Cookies from "js-cookie";
+import { stopTokenRefresh } from "@/utils/refreshTokenHandler";
 
 const logout = async (): Promise<void> => {
   try {
+    stopTokenRefresh(); // 🛑 Hentikan refresh token SEBELUM apapun
+
     console.log("🔘 Logout dimulai...");
 
-    // Hapus semua sesi lokal terlebih dahulu
-    localStorage.clear();
-    sessionStorage.clear();
+    // Hapus token dari localStorage dan sessionStorage
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("expiresIn");
+
+    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("expiresIn");
+
+    // Hapus cookies via js-cookie
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
 
-    // Hapus cookie Microsoft/Azure yang mungkin tersimpan
+    // Hapus semua cookie manual
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
         .replace(/^ +/, "")
         .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
     });
 
-    console.log("✅ Data lokal dihapus, memanggil API logout...");
+    console.log("✅ Semua storage lokal dibersihkan");
 
-    // Panggil API logout ke backend
+    // Panggil API backend untuk menghapus cookie server
     const response = await fetch("/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });
 
-    if (response.redirected) {
-      console.log("✅ Redirecting to Azure AD logout...");
-      window.location.href = response.url; // Redirect ke Azure AD Logout
-      return;
+    if (!response.ok) {
+      console.error("❌ Logout API gagal:", await response.text());
+      throw new Error("Logout API gagal");
     }
 
-    console.log("✅ Semua data pengguna dihapus!");
+    const data = await response.json();
+    console.log("✅ Server logout:", data.message);
 
-    // Redirect ke halaman login
-    window.location.href = "/auth";
+    // Delay untuk menghindari race condition
+    setTimeout(() => {
+      console.log("🔁 Redirect ke halaman login...");
+      window.location.href = "/auth";
+    }, 300);
   } catch (error) {
     console.error("❌ Logout gagal:", error);
-    // Fallback: redirect ke halaman login jika gagal
     window.location.href = "/auth";
   }
 };

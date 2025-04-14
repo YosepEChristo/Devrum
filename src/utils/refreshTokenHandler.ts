@@ -110,3 +110,10 @@ export function startTokenRefresh(refreshToken: string, expiresIn: number) {
     }
   }, refreshTime);
 }
+
+export function stopTokenRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+}
