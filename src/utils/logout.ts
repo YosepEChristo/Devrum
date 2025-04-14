@@ -8,6 +8,8 @@ const logout = async (): Promise<void> => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("expiresIn");
+    localStorage.removeItem("selectedProjectId");
+    localStorage.removeItem("organizationName");
 
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("refreshToken");

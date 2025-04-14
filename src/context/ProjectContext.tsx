@@ -1,11 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface Developer {
   name: string;
   storyPoints: number;
-  velocity: number; // ✅ Tambahkan properti ini
+  velocity: number;
   score: number;
   bugFixScore: number;
 }
@@ -36,25 +42,63 @@ const ProjectContext = createContext<ProjectContextProps | undefined>(
 );
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-    null
+    () => {
+      if (typeof window !== "undefined") {
+        return localStorage.getItem("selectedProjectId");
+      }
+      return null;
+    }
   );
-  const [organizationName, setOrganizationName] = useState<string | null>(null);
+
+  const [organizationName, setOrganizationName] = useState<string | null>(
+    () => {
+      if (typeof window !== "undefined") {
+        return localStorage.getItem("organizationName");
+      }
+      return null;
+    }
+  );
+
   const [selectedDeveloper, setSelectedDeveloper] = useState<Developer | null>(
     null
   );
-  const [developerScores, setDeveloperScores] = useState<
-    Record<string, number>
-  >({});
+
   const [dpsWeights, setDpsWeights] = useState<DpsWeights>({
     effort: 60,
     velocity: 20,
     bugFix: 20,
   });
-  const updateDpsWeights = (newWeights: DpsWeights) => {
-    setDpsWeights(newWeights);
-    localStorage.setItem("dpsWeights", JSON.stringify(newWeights)); // Simpan ke localStorage
-  };
+
+  const [developerScores, setDeveloperScores] = useState<
+    Record<string, number>
+  >({});
+
+  // Simpan ke localStorage saat projectId berubah
+  useEffect(() => {
+    if (selectedProjectId) {
+      localStorage.setItem("selectedProjectId", selectedProjectId);
+    } else {
+      localStorage.removeItem("selectedProjectId");
+    }
+  }, [selectedProjectId]);
+
+  // Simpan ke localStorage saat organizationName berubah
+  useEffect(() => {
+    if (organizationName) {
+      localStorage.setItem("organizationName", organizationName);
+    } else {
+      localStorage.removeItem("organizationName");
+    }
+  }, [organizationName]);
+
+  if (!hasMounted) return null;
 
   return (
     <ProjectContext.Provider
@@ -66,7 +110,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         selectedDeveloper,
         setSelectedDeveloper,
         dpsWeights,
-        updateDpsWeights,
+        updateDpsWeights: setDpsWeights,
         developerScores,
         setDeveloperScores,
       }}
@@ -76,9 +120,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useProjectContext() {
+export function useProjectContext(): ProjectContextProps {
   const context = useContext(ProjectContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useProjectContext must be used within a ProjectProvider");
   }
   return context;
