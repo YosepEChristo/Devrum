@@ -33,6 +33,6 @@ export default function handler(
 
   // Gunakan format logout yang mencegah single sign-on otomatis
   const logoutUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/logout?post_logout_redirect_uri=${redirectUri}&prompt=select_account`;
-
+  //test
   res.redirect(logoutUrl);
 }
