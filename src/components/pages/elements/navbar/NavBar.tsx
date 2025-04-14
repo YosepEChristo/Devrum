@@ -37,12 +37,9 @@ const Navbar: FC = () => {
       isDisabled: !selectedDeveloper,
     },
   ];
-  const handleLogout = async () => {
+  const handleLogout = () => {
     console.log("🔘 Tombol logout ditekan");
-    await logout();
-    console.log("🔀 Redirect ke halaman login...");
-
-    window.location.href = "/auth"; // Redirect langsung ke halaman login
+    logout(); // langsung saja, biarkan utils/logout.ts yang handle redirect
   };
 
   return (
