@@ -71,9 +71,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   );
 
   const [dpsWeights, setDpsWeights] = useState<DpsWeights>({
-    effort: 60,
-    velocity: 20,
-    bugFix: 20,
+    effort: 100,
+    velocity: 0,
+    bugFix: 0,
   });
 
   const [developerScores, setDeveloperScores] = useState<
