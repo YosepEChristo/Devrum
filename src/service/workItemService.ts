@@ -205,7 +205,7 @@ export const fetchProjectAndDevelopers = async (
 
   Object.values(developerMap).forEach((dev) => {
     dev.score =
-      0.6 * dev.storyPoints + 0.2 * dev.velocity + 0.2 * dev.bugFixScore;
+      1 * dev.storyPoints + 0 * dev.velocity + 0 * dev.bugFixScore;
   });
 
   return { projectName, developers: Object.values(developerMap) };
