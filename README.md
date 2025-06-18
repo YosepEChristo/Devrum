@@ -8,7 +8,7 @@
 
 Aplikasi dapat langsung diakses melalui link berikut:
 
-👉 [https://devrum.vercel.app](https://devrum.vercel.app)
+[https://devrum.vercel.app](https://devrum.vercel.app)
 
 ---
 
