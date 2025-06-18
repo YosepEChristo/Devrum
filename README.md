@@ -1,6 +1,9 @@
-# DevRum — Developer Productivity Measurement Platform
+#DevRum — Developer Productivity Measurement Platform for Scrum Teams
 
-**DevRum** adalah aplikasi berbasis web untuk mengukur produktivitas developer dalam tim Scrum menggunakan data dari **Azure DevOps**. Aplikasi ini dibangun dengan **Next.js** dan terintegrasi dengan API Azure DevOps melalui OAuth 2.0.
+**DevRum** adalah aplikasi berbasis web untuk mengukur produktivitas developer dalam tim **Scrum** menggunakan data dari **Azure DevOps**. Aplikasi ini dibangun dengan **Next.js** dan terintegrasi dengan API Azure DevOps melalui OAuth 2.0.
+
+DevRum dirancang untuk memudahkan Scrum Master, Project Manager, atau tim pengembang dalam memantau capaian story point per sprint secara otomatis dan terpusat.
+
 
 ---
 
