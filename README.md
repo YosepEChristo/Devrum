@@ -1,4 +1,4 @@
-# 🧠 DevRum — Developer Productivity Measurement Platform
+# DevRum — Developer Productivity Measurement Platform
 
 **DevRum** adalah aplikasi berbasis web untuk mengukur produktivitas developer dalam tim Scrum menggunakan data dari **Azure DevOps**. Aplikasi ini dibangun dengan **Next.js** dan terintegrasi dengan API Azure DevOps melalui OAuth 2.0.
 
@@ -8,7 +8,7 @@
 
 Aplikasi dapat langsung diakses melalui link berikut:
 
-👉 [https://devrum.vercel.app](https://devrum.vercel.app)
+[https://devrum.vercel.app](https://devrum.vercel.app)
 
 ---
 
@@ -48,6 +48,7 @@ npm install
 cp .env.example .env.local
 # Edit .env.local dengan kredensial Azure DevOps
 
+kredensial untuk .env.local sebagai beriut:
 AZURE_AD_CLIENT_ID=           # Client ID dari Azure App Registration
 AZURE_AD_CLIENT_SECRET=       # Client Secret dari Azure App Registration
 AZURE_AD_TENANT_ID=           # Tenant ID organisasi Azure
