@@ -58,3 +58,43 @@ LOGOUT_REDIRECT_URI=http://localhost:3000/            #Value bisa disesuaikan ji
 # 4. Jalankan lokal
 npm run dev
 ```
+## 📁 Struktur Teknologi
+
+| Layer         | Teknologi                      |
+|---------------|-------------------------------|
+| Frontend      | Next.js (React), Tailwind CSS |
+| Backend API   | Next.js API Routes (Node.js)  |
+| OAuth & Data  | Azure DevOps REST API         |
+| Deployment    | Vercel                        |
+| Repo & CI/CD  | GitHub                        |
+
+---
+
+## 📚 Dokumentasi Terkait
+
+Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digunakan dalam proyek ini:
+
+- 📘 **Next.js Documentation**  
+  https://nextjs.org/docs
+
+- 📘 **Next.js Environment Variables Guide**  
+  https://nextjs.org/docs/app/building-your-application/configuring/environment-variables
+
+- 📘 **Azure DevOps REST API Reference**  
+  https://learn.microsoft.com/en-us/rest/api/azure/devops
+
+- 📘 **Azure App Registration (OAuth 2.0)**  
+  https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+
+- 📘 **OAuth 2.0 Authorization Code Flow (Microsoft Identity Platform)**  
+  https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
+
+- 📘 **Tailwind CSS Documentation**  
+  https://tailwindcss.com/docs
+
+- 📘 **Vercel Documentation**  
+  https://vercel.com/docs
+
+- 📘 **GitHub Actions Documentation**  
+  https://docs.github.com/en/actions
+
