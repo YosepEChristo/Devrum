@@ -86,5 +86,3 @@ Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digu
 
 - 📘 **GitHub Actions Documentation**  
   https://docs.github.com/en/actions
-  
-```
