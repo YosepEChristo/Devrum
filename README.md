@@ -48,6 +48,7 @@ npm install
 cp .env.example .env.local
 # Edit .env.local dengan kredensial Azure DevOps
 
+kredensial untuk .env.local sebagai beriut:
 AZURE_AD_CLIENT_ID=           # Client ID dari Azure App Registration
 AZURE_AD_CLIENT_SECRET=       # Client Secret dari Azure App Registration
 AZURE_AD_TENANT_ID=           # Tenant ID organisasi Azure
