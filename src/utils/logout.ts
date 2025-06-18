@@ -26,11 +26,11 @@ const logout = async (): Promise<void> => {
     const isProduction = window.location.hostname !== "localhost";
 
     if (isProduction) {
-      console.log("🌐 Production: redirect langsung ke API logout");
-      // ✅ Langsung redirect
+      console.log("Production: redirect langsung ke API logout");
+      //
       window.location.href = "/api/auth/logout";
     } else {
-      console.log("🧪 Development: pakai fetch logout");
+      console.log("Development: pakai fetch logout");
       const response = await fetch("/api/auth/logout", {
         method: "GET",
         credentials: "include",
@@ -43,7 +43,7 @@ const logout = async (): Promise<void> => {
       }
     }
   } catch (err) {
-    console.error("❌ Logout gagal:", err);
+    console.error("Logout gagal:", err);
     window.location.href = "/auth";
   }
 };
