@@ -63,6 +63,7 @@ npm run dev
 ```
 ---
 
+---
 ## 📚 Dokumentasi Terkait
 
 Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digunakan dalam proyek ini:
@@ -85,7 +86,6 @@ Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digu
 - 📘 **Tailwind CSS Documentation**  
   https://tailwindcss.com/docs
 
----
 
 - 📘 **Vercel Documentation**  
   https://vercel.com/docs
