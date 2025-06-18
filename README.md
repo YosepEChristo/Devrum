@@ -80,11 +80,11 @@ Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digu
 
 - 📘 **Tailwind CSS Documentation**  
   https://tailwindcss.com/docs
-  
-```
+
 - 📘 **Vercel Documentation**  
   https://vercel.com/docs
 
 - 📘 **GitHub Actions Documentation**  
   https://docs.github.com/en/actions
-
+  
+```
