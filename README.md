@@ -1,6 +1,9 @@
-# DevRum — Developer Productivity Measurement Platform
+# DevRum — Developer Productivity Measurement Platform for Scrum Teams
 
-**DevRum** adalah aplikasi berbasis web untuk mengukur produktivitas developer dalam tim Scrum menggunakan data dari **Azure DevOps**. Aplikasi ini dibangun dengan **Next.js** dan terintegrasi dengan API Azure DevOps melalui OAuth 2.0.
+**DevRum** adalah aplikasi berbasis web untuk mengukur produktivitas developer dalam tim **Scrum** menggunakan data dari **Azure DevOps**. Aplikasi ini dibangun dengan **Next.js** dan terintegrasi dengan API Azure DevOps melalui OAuth 2.0.
+
+DevRum dirancang untuk memudahkan Scrum Master, Project Manager, atau tim pengembang dalam memantau capaian story point per sprint secara otomatis dan terpusat.
+
 
 ---
 
@@ -58,3 +61,36 @@ LOGOUT_REDIRECT_URI=http://localhost:3000/            #Value bisa disesuaikan ji
 # 4. Jalankan lokal
 npm run dev
 ```
+---
+
+
+## 📚 Dokumentasi Terkait
+
+Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digunakan dalam proyek ini:
+
+- 📘 **Next.js Documentation**  
+  https://nextjs.org/docs
+
+- 📘 **Next.js Environment Variables Guide**  
+  https://nextjs.org/docs/app/building-your-application/configuring/environment-variables
+
+- 📘 **Azure DevOps REST API Reference**  
+  https://learn.microsoft.com/en-us/rest/api/azure/devops
+
+- 📘 **Azure App Registration (OAuth 2.0)**  
+  https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+
+- 📘 **OAuth 2.0 Authorization Code Flow (Microsoft Identity Platform)**  
+  https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
+
+- 📘 **Tailwind CSS Documentation**  
+  https://tailwindcss.com/docs
+
+
+- 📘 **Vercel Documentation**  
+  https://vercel.com/docs
+
+- 📘 **GitHub Actions Documentation**  
+  https://docs.github.com/en/actions
+
+---
