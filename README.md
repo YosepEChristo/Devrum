@@ -61,6 +61,7 @@ LOGOUT_REDIRECT_URI=http://localhost:3000/            #Value bisa disesuaikan ji
 # 4. Jalankan lokal
 npm run dev
 ```
+---
 
 ## 📚 Dokumentasi Terkait
 
@@ -83,6 +84,8 @@ Berikut referensi dokumentasi resmi dari masing-masing teknologi utama yang digu
 
 - 📘 **Tailwind CSS Documentation**  
   https://tailwindcss.com/docs
+
+---
 
 - 📘 **Vercel Documentation**  
   https://vercel.com/docs
