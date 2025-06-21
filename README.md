@@ -66,28 +66,25 @@ npm run dev
 📚 Related Documentation
 Below are official documentation references for each core technology used in this project:
 
-📘 Next.js Documentation
+-📘 **Next.js Documentation**
 https://nextjs.org/docs
 
-📘 Next.js Environment Variables Guide
+-📘 **Next.js Environment Variables Guide**
 https://nextjs.org/docs/app/building-your-application/configuring/environment-variables
 
-📘 Azure DevOps REST API Reference
+-📘 **Azure DevOps REST API Reference**
 https://learn.microsoft.com/en-us/rest/api/azure/devops
 
-📘 Azure App Registration (OAuth 2.0)
+-📘 **Azure App Registration (OAuth 2.0)**
 https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
 
-📘 OAuth 2.0 Authorization Code Flow (Microsoft Identity Platform)
+-📘 **OAuth 2.0 Authorization Code Flow (Microsoft Identity Platform)**
 https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
 
-📘 Tailwind CSS Documentation
+-📘 **Tailwind CSS Documentation**
 https://tailwindcss.com/docs
 
-📘 Vercel Documentation
+-📘 **Vercel Documentation**
 https://vercel.com/docs
-
-📘 GitHub Actions Documentation
-https://docs.github.com/en/actions
 
 ---
