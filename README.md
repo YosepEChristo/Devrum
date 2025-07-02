@@ -47,7 +47,7 @@ cd devrum
 npm install
 
 # 3. Create config file
-cp .env.example .env.local
+cp .env.local
 # Edit .env.local with Azure DevOps credentials
 
 credentials for .env.local are as follows:
